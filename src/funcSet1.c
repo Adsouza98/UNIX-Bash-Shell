@@ -17,6 +17,11 @@
 // Local Libraries
 #include "FuncSet1.h"
 
+/*
+ * [display_Shell desciption]
+ * If Shell is started for the first time (on bootup)
+ * function clears terminal display and prints Shell prompt for user
+*/
 void display_Shell()
 {
   static bool bootup = true;
@@ -32,4 +37,41 @@ void display_Shell()
     bootup = false;
   }
   printf("<adsouz03Shell>"); // Display Shell Prompt
+}
+
+/*
+ * [shell_input desciption]
+ * @param   char cmd[], user command input string
+ * @param   char *arg[], user command arguments input string array
+ * User enters a
+*/
+void shell_input(char cmd[], char *arg[])
+{
+  char userInput[1024];
+  int index = 0, i = 0, j = 0, c;
+  char *userArray[50], *tmp;
+
+  // Read Single Line of User Input
+  do {
+    c = fgetc(stdin);
+    userInput[index++] = (char)c;
+  } while( c != '\n'); // Exit loop when user inputs return ("enter")
+
+  if (index == 1 ) {return;} //No valid input
+  tmp = strtok(userInput, " \n");
+
+  // Parse Line into Segmented Command and Arguments
+  while (tmp != NULL) {
+    userArray[i++] = strdup(tmp);
+    tmp = strtok(NULL, " \n");
+  }
+
+  // First User Input is the Command
+  strcpy(cmd, userArray[0]);
+
+  // All Other User Inputs are Arguments
+  for (j=0;j<i;j++) {
+    arg[j] = userArray[j];
+  }
+  arg[i] = NULL; //Terminate the Argument Array with a NULL pointer
 }
