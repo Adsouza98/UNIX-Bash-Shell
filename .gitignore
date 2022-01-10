@@ -1,0 +1,17 @@
+# Ignore Assignment Desciption Folder
+/docs
+
+# Ignore Compiled Source Executables
+*.a
+*.o
+
+# Ignore OS generated Files
+.DS_Store
+.DS_Store?
+
+# Compressed Files
+*.tar
+*.gz
+*.7z
+*.zip
+*.rar
