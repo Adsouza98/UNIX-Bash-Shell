@@ -1,6 +1,6 @@
 #ifndef FuncSet1
 #define FuncSet1
 
-void funcSet1Print();
+void display_Shell();
 
 #endif
