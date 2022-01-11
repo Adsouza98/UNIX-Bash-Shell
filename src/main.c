@@ -40,7 +40,7 @@ int main ()
       j++;
     }
     if (strcmp(command, "clear") == 0) {
-      clearScreen();
+      clear();
     }
     if (strcmp(command, "exit") == 0) {
       exit(0);

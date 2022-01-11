@@ -3,5 +3,5 @@
 
 void display_Shell();
 void shellInput();
-void clearScreen();
+void clear();
 #endif

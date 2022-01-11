@@ -88,7 +88,7 @@ void shellInput(char cmd[], char *arg[])
   arg[i-1] = NULL; // Terminate the Argument Array with a NULL pointer
 }
 
-void clearScreen()
+void clear()
 {
   system("clear");           // Clear Terminal Display
 }
