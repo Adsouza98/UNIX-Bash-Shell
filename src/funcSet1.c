@@ -27,26 +27,18 @@
  * If Shell is started for the first time (on bootup)
  * function clears terminal display and prints Shell prompt for user
 */
-void display_Shell()
+void displayShell(uid_t uid, uid_t euid, char* userName)
 {
   static bool bootup = true;
   if (bootup == true) { //On bootup Clear Terminal Window
-    //const char* CLEAN_TERMINAL = " \e[1;1H\e[2J";
-    /*
-     * \e = escape
-     * [1;1H = Coordinates to Upper Left Corner of the Terminal
-     * [2J = Create a Screen for the Shell in the Terminal Window
-    */
-    //write(STDOUT_FILENO, CLEAN_TERMINAL, 12);
     system("clear");
     bootup = false;
   }
-  printf("<adsouz03Shell>");
-  // if (uid < 0 || uid!=euid) {
-  //   printf("[%s@socs]# ", p->pw_name); // Display Shell Prompt
-  // } else {
-  //   printf("[%s@socs]$", p->pw_name);  // Super User
-  // }
+  if (uid < 0 || uid!=euid) {          // Privalage Check
+    printf("[%s@socs]$ ", userName); // Regular User
+  } else {
+    printf("[%s@socs]#", userName);  // Super User
+  }
 
 }
 

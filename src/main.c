@@ -33,14 +33,14 @@ int main ()
   } else {
     userName = strdup(p->pw_name);
   }
-
-  printf("[%s@socs]# ", userName);
+  
   //char *envp[] = {(char *) "PATH=/bin", 0}; //Environment Variables Commands /bin
 
   while(1) { //Repeat Forever
     j=0;
+
     //Display User Shell Prompt for Command
-    display_Shell();
+    displayShell(uid, euid, userName);
     //Read Input from Terminal
     shellInput(command, arguments);
     //Fork
