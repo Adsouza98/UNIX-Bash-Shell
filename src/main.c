@@ -2,6 +2,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <pwd.h>
+#include <unistd.h>
+#include <sys/types.h>
 
 //Local Libraries
 #include "FuncSet1.h"
@@ -12,7 +15,13 @@ int main ()
 {
   char cmd[50], command[50], *arguments[50];
   int j = 0;
+
+
+  uid_t uid=getuid(), euid=geteuid(); // User Information Variables
+  struct passwd *p;                   // User Infromation Struct
+
   //char *envp[] = {(char *) "PATH=/bin", 0}; //Environment Variables Commands /bin
+
   while(1) { //Repeat Forever
     j=0;
     //Display User Shell Prompt for Command
@@ -34,7 +43,7 @@ int main ()
       clearScreen();
     }
     if (strcmp(command, "exit") == 0) {
-      break;
+      exit(0);
     }
   }
 

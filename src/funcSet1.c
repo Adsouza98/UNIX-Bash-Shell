@@ -41,7 +41,13 @@ void display_Shell()
     system("clear");
     bootup = false;
   }
-  printf("<adsouz03Shell>"); // Display Shell Prompt
+  printf("<adsouz03Shell>");
+  // if (uid < 0 || uid!=euid) {
+  //   printf("[%s@socs]# ", p->pw_name); // Display Shell Prompt
+  // } else {
+  //   printf("[%s@socs]$", p->pw_name);  // Super User
+  // }
+
 }
 
 /*
