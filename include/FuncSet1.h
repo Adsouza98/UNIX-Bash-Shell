@@ -2,5 +2,6 @@
 #define FuncSet1
 
 void display_Shell();
-void shell_input();
+void shellInput();
+void clearScreen();
 #endif

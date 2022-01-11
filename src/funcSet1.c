@@ -7,6 +7,10 @@
  * Set 1 Functions of Assignment 1
 */
 
+//Define Statements
+//To Allow use of strtok(), without compiler warnings, taken from Man-Page
+#define _POSIX_C_SOURCE 200809L
+
 // Standard Libraries
 #include <stdio.h>
 #include <stdlib.h>
@@ -16,6 +20,7 @@
 
 // Local Libraries
 #include "FuncSet1.h"
+
 
 /*
  * [display_Shell desciption]
@@ -45,22 +50,23 @@ void display_Shell()
  * @param   char *arg[], user command arguments input string array
  * User enters a
 */
-void shell_input(char cmd[], char *arg[])
+void shellInput(char cmd[], char *arg[])
 {
   char userInput[1024];
-  int index = 0, i = 0, j = 0, c;
+  int i = 0, j = 0;
   char *userArray[50], *tmp;
 
   // Read Single Line of User Input
-  do {
-    c = fgetc(stdin);
-    userInput[index++] = (char)c;
-  } while( c != '\n'); // Exit loop when user inputs return ("enter")
+  fgets(userInput, 1024, stdin);
 
-  if (index == 1 ) {return;} //No valid input
+  //No valid input, return for new user input
+  if (strcmp(userInput, "\n") == 0) {return;}
+
+  // Segments User Input into Command and Arugments, delimited by spaces and newline
   tmp = strtok(userInput, " \n");
 
-  // Parse Line into Segmented Command and Arguments
+  // Parse Line into Segmented Command and Arguments then store pointers in
+  // temporary array userArray[]
   while (tmp != NULL) {
     userArray[i++] = strdup(tmp);
     tmp = strtok(NULL, " \n");
@@ -71,7 +77,12 @@ void shell_input(char cmd[], char *arg[])
 
   // All Other User Inputs are Arguments
   for (j=0;j<i;j++) {
-    arg[j] = userArray[j];
+    arg[j] = userArray[j+1]; // j+1 to Not Include Command in Array of Arguments
   }
-  arg[i] = NULL; //Terminate the Argument Array with a NULL pointer
+  arg[i-1] = NULL; // Terminate the Argument Array with a NULL pointer
+}
+
+void clearScreen()
+{
+  system("clear");           // Clear Terminal Display
 }
