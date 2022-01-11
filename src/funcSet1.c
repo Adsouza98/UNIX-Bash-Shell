@@ -14,9 +14,9 @@
 // Standard Libraries
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include <stdbool.h>
-#include <unistd.h>
+#include <string.h>                           // For Strings
+#include <stdbool.h>                          // For Bool
+#include <unistd.h>                           // For uid_t
 
 // Local Libraries
 #include "FuncSet1.h"
@@ -39,7 +39,6 @@ void displayShell(uid_t uid, uid_t euid, char* userName)
   } else {
     printf("[%s@socs]#", userName);  // Super User
   }
-
 }
 
 /*
@@ -75,9 +74,9 @@ void shellInput(char cmd[], char *arg[])
 
   // All Other User Inputs are Arguments
   for (j=0;j<i;j++) {
-    arg[j] = userArray[j+1]; // j+1 to Not Include Command in Array of Arguments
+    arg[j] = userArray[j];
   }
-  arg[i-1] = NULL; // Terminate the Argument Array with a NULL pointer
+  arg[i] = NULL; // Terminate the Argument Array with a NULL pointer
 }
 
 void clear()
