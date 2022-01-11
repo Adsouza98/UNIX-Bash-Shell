@@ -32,3 +32,6 @@ clean:
 
 run:
 	$(BIN)myShell
+
+valgrind:
+	valgrind --leak-check=yes $(BIN)myShell
