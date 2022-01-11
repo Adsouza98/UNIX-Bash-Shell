@@ -1,3 +1,7 @@
+//Define Statements
+//To Allow use of strtok(), without compiler warnings, taken from Man-Page
+#define _POSIX_C_SOURCE 200809L
+
 // Standard Libraries
 #include <stdio.h>
 #include <stdlib.h>
@@ -18,8 +22,19 @@ int main ()
 
 
   uid_t uid=getuid(), euid=geteuid(); // User Information Variables
+  char *userName;                     // User ID string
   struct passwd *p;                   // User Infromation Struct
 
+  //User Name Check
+  if (((p = getpwuid(uid)) == NULL) ) {
+    fprintf(stderr, "%s", "User Name Error\n");
+    userName = (char *) malloc(5);
+    strcpy(userName, "user");
+  } else {
+    userName = strdup(p->pw_name);
+  }
+
+  printf("[%s@socs]# ", userName);
   //char *envp[] = {(char *) "PATH=/bin", 0}; //Environment Variables Commands /bin
 
   while(1) { //Repeat Forever
@@ -47,5 +62,6 @@ int main ()
     }
   }
 
+  free(userName);
   return 0;
 }
