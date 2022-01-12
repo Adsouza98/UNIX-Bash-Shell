@@ -4,7 +4,7 @@
 # Ignore Compiled Source Executables
 *.a
 *.o
-myShell
+adsouz03Shell
 
 # Ignore OS generated Files
 .DS_Store
