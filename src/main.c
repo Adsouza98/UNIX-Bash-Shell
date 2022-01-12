@@ -18,15 +18,17 @@
 
 int main ()
 {
-  char cmd[50], command[50], *arguments[50];
+  char cmdBin[50], cmdUsrBin[50], command[50], *arguments[50];
   int j = 0;
 
-  pid_t parentID = getpid();                // Parent Process ID
-  pid_t pid;                                // Child Process ID
+  int status;                                     // Execve Return Status
 
-  uid_t uid=getuid(), euid=geteuid();       // User Information Variables
-  char *userName;                           // User ID string
-  struct passwd *p;                         // User Infromation Struct
+  pid_t parentID = getpid();                      // Parent Process ID
+  pid_t pid;                                      // Child Process ID
+
+  uid_t uid=getuid(), euid=geteuid();             // User Information Variables
+  char *userName;                                 // User ID string
+  struct passwd *p;                               // User Infromation Struct
 
   //User Name Check
   if (((p = getpwuid(uid)) == NULL) ) {
@@ -37,10 +39,12 @@ int main ()
     userName = strdup(p->pw_name);
   }
 
-  char *envp[] = {(char *) "PATH=/bin", 0}; //Environment Variables Commands /bin
+  //char *envp[] = {(char *) "PATH=/bin", 0};     // Environment Variables Commands /bin/
+  char *envp[] = {(char *) "PATH=/usr/bin", 0};   // Environment Variables Commands /usr/bin/
 
   while(1) { //Repeat Forever
     j=0;
+    status = 0;
     printf("Parent ID = %d\n", (int)parentID);
     // Display User Shell Prompt for Command
     displayShell(uid, euid, userName);
@@ -48,16 +52,39 @@ int main ()
     // Read Input from Terminal
     shellInput(command, arguments);
 
-    //Fork
-    if (fork() != 0) {                      // Check if Parent has a Child Process
-      printf("Waiting for Child\n");
-      wait(NULL);                           // Wait for Chiild
-    } else {
-      printf("Attempting to Execute Command = %s\n", command);
-      strcpy(cmd, "/bin/");                 // Command Base Directory
-      strcat(cmd, command);                 // Concatenate command to directory string
-      execve(cmd, arguments, envp);         // Execute Command
-      printf("Finished Executing Command = %s\n", command);
+    //Forking
+
+    // Fork Failed
+    if ((pid = fork()) < 0) {
+      perror("Fork Failed\n");
+      wait(NULL);                                 // Wait for Potential Chiild
+      return(-1);
+    }
+    // Child Process
+    else if (pid == 0) {
+      printf("Child with pid = %d, Attempting to Execute Command = %s\n", (int)getpid(), command);
+
+      // Command is in PATH=/bin/
+      strcpy(cmdBin, "/bin/");
+      strcat(cmdBin, command);
+      status = execvp(cmdBin, arguments);          // Execute in PATH=/bin Dir
+      
+      // Command is in PATH=/usr/bin/
+      if (status == -1) {
+        printf("Test\n");
+        strcpy(cmdUsrBin, "/usr/bin/");              // Command Base Directory
+        strcat(cmdUsrBin, command);                  // Concatenate command to directory string
+        status = execve(cmdUsrBin, arguments, envp); // Execute Command
+      }
+
+    }
+    //Parent Process
+      printf("Parent Process pid = %d\n", (int)getpid());
+      wait(NULL);
+
+    if (status == -1) {
+      printf("Process with pid = %d, execve Failed\n", (int)getpid());
+      exit(0);
     }
 
     // Clear Command
