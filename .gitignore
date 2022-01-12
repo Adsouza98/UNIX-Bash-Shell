@@ -4,6 +4,7 @@
 # Ignore Compiled Source Executables
 *.a
 *.o
+myShell
 
 # Ignore OS generated Files
 .DS_Store
