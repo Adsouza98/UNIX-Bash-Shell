@@ -11,7 +11,7 @@ CFLAGS = -c -g -Wall --std=c11 -Iinclude 	# C Compiler Flags
 
 # Defualt Rule
 all: main.o funcSet1.o funcSet2.o funcSet3.o
-	$(CC) $(BIN)main.o $(BIN)funcSet1.o $(BIN)funcSet2.o $(BIN)funcSet3.o -o $(BIN)myShell
+	$(CC) $(BIN)main.o $(BIN)funcSet1.o $(BIN)funcSet2.o $(BIN)funcSet3.o -o $(BIN)adsouz03Shell
 
 main.o:
 	$(CC) $(CFLAGS) -c $(SRC)main.c -o $(BIN)main.o
@@ -31,7 +31,7 @@ clean:
 	rm -f -r $(BIN)*
 
 run:
-	$(BIN)myShell
+	$(BIN)adsouz03Shell
 
 valgrind:
-	valgrind --leak-check=yes $(BIN)myShell
+	valgrind --leak-check=yes $(BIN)adsouz03Shell
