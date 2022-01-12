@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <pwd.h>
-#include <unistd.h>                         // For uid_t
+#include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 
@@ -21,6 +21,8 @@ int main ()
   char cmd[50], command[50], *arguments[50];
   int j = 0;
 
+  pid_t parentID = getpid();                // Parent Process ID
+  pid_t pid;                                // Child Process ID
 
   uid_t uid=getuid(), euid=geteuid();       // User Information Variables
   char *userName;                           // User ID string
@@ -39,7 +41,7 @@ int main ()
 
   while(1) { //Repeat Forever
     j=0;
-
+    printf("Parent ID = %d\n", (int)parentID);
     // Display User Shell Prompt for Command
     displayShell(uid, euid, userName);
 
@@ -55,6 +57,7 @@ int main ()
       strcpy(cmd, "/bin/");                 // Command Base Directory
       strcat(cmd, command);                 // Concatenate command to directory string
       execve(cmd, arguments, envp);         // Execute Command
+      printf("Finished Executing Command = %s\n", command);
     }
 
     // Clear Command
