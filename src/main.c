@@ -18,7 +18,7 @@
 
 int main ()
 {
-  char cmdBin[50], cmdUsrBin[50], command[50], *arguments[50];
+  char cmdBin[50], cmdUsrBin[50], cmdUsrLocal[50], command[50], *arguments[50];
   int j = 0;
 
   int status;                                     // Execve Return Status
@@ -41,6 +41,7 @@ int main ()
 
   //char *envp[] = {(char *) "PATH=/bin", 0};     // Environment Variables Commands /bin/
   char *envp[] = {(char *) "PATH=/usr/bin", 0};   // Environment Variables Commands /usr/bin/
+  //char *envpLocal[] = {(char *) "PATH=bin", 0};
 
   while(1) { //Repeat Forever
     j=0;
@@ -58,7 +59,7 @@ int main ()
     if ((pid = fork()) < 0) {
       perror("Fork Failed\n");
       wait(NULL);                                 // Wait for Potential Chiild
-      return(-1);
+      exit(-1);
     }
     // Child Process
     else if (pid == 0) {
@@ -68,19 +69,24 @@ int main ()
       strcpy(cmdBin, "/bin/");
       strcat(cmdBin, command);
       status = execvp(cmdBin, arguments);          // Execute in PATH=/bin Dir
-      
+
       // Command is in PATH=/usr/bin/
       if (status == -1) {
-        printf("Test\n");
         strcpy(cmdUsrBin, "/usr/bin/");              // Command Base Directory
-        strcat(cmdUsrBin, command);                  // Concatenate command to directory string
+        strcat(cmdUsrBin, command);                  // Concatenate Command to directory string
         status = execve(cmdUsrBin, arguments, envp); // Execute Command
       }
-
+      // Command is an Executable File in Current Dir
+      if (command[0] == '.' && command[1] == '/') {
+        printf("Command started with slash\n");
+        //strcpy(cmdUsrLocal, "bin/");
+        //strcat(cmdUsrLocal, command);
+        status = execvp(command, arguments);
+      }
     }
     //Parent Process
       printf("Parent Process pid = %d\n", (int)getpid());
-      wait(NULL);
+      wait(NULL);                                     // Parent Wait for Child
 
     if (status == -1) {
       printf("Process with pid = %d, execve Failed\n", (int)getpid());
