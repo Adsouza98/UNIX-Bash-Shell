@@ -5,6 +5,7 @@
 *.a
 *.o
 adsouz03Shell
+testfile
 
 # Ignore OS generated Files
 .DS_Store

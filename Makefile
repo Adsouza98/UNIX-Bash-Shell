@@ -10,8 +10,9 @@ CC = gcc																	# Compiler
 CFLAGS = -c -g -Wall --std=c11 -Iinclude 	# C Compiler Flags
 
 # Defualt Rule
-all: main.o funcSet1.o funcSet2.o funcSet3.o
+all: main.o funcSet1.o funcSet2.o funcSet3.o testfile.o
 	$(CC) $(BIN)main.o $(BIN)funcSet1.o $(BIN)funcSet2.o $(BIN)funcSet3.o -o $(BIN)adsouz03Shell
+	$(CC) $(BIN)testfile.o -o $(BIN)testfile
 
 main.o:
 	$(CC) $(CFLAGS) -c $(SRC)main.c -o $(BIN)main.o
@@ -24,6 +25,9 @@ funcSet2.o:
 
 funcSet3.o:
 	$(CC) $(CFLAGS) -c $(SRC)funcSet3.c -o $(BIN)funcSet3.o
+
+testfile.o:
+	$(CC) $(CFLAGS) -c $(SRC)testfile.c -o $(BIN)testfile.o
 
 # Cleaning Up All Artifacts
 .PHONY: clean
