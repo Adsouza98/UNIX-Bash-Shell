@@ -18,10 +18,11 @@
 
 int main ()
 {
-  char cmdBin[50], cmdUsrBin[50], cmdUsrLocal[50], command[50], *arguments[50];
-  int j = 0;
+  char cmdBin[50], cmdUsrBin[50], cmdUsrLocal[50], command[50], *arguments[50], *operands[50];
+  int i = 0, j = 0;
 
   int status;                                     // Execve Return Status
+  int operator;                                   // shellInput Return Status
 
   pid_t parentID = getpid();                      // Parent Process ID
   pid_t pid;                                      // Child Process ID
@@ -44,6 +45,7 @@ int main ()
   //char *envpLocal[] = {(char *) "PATH=bin", 0};
 
   while(1) { //Repeat Forever
+    i=0;
     j=0;
     status = 0;
     printf("Parent ID = %d\n", (int)parentID);
@@ -51,7 +53,7 @@ int main ()
     displayShell(uid, euid, userName);
 
     // Read Input from Terminal
-    shellInput(command, arguments);
+    operator = shellInput(command, arguments, operands);
 
     //Forking
 
@@ -65,10 +67,20 @@ int main ()
     else if (pid == 0) {
       printf("Child with pid = %d, Attempting to Execute Command = %s\n", (int)getpid(), command);
 
-      // Command is in PATH=/bin/
-      strcpy(cmdBin, "/bin/");
-      strcat(cmdBin, command);
-      status = execvp(cmdBin, arguments);          // Execute in PATH=/bin Dir
+      if (operator == 5) {
+        printf("Attempting outRedirToFile\n");
+        status = outRedirToFile(command, arguments, operands);
+      } else {
+        status = -1;
+      }
+
+      //Command is in PATH=/bin/
+      if (status == -1) {
+        strcpy(cmdBin, "/bin/");
+        strcat(cmdBin, command);
+        status = execvp(cmdBin, arguments);          // Execute in PATH=/bin Dir
+      }
+
 
       // Command is in PATH=/usr/bin/
       if (status == -1) {
@@ -104,8 +116,12 @@ int main ()
     }
 
     printf("Command = %s\n", command);
-    while (arguments[j] != NULL) {
-      printf("Argument[%d] = %s\n", j, arguments[j]);
+    while (arguments[i] != NULL) {
+      printf("Argument[%d] = %s\n", i, arguments[i]);
+      i++;
+    }
+    while (operands[j] != NULL) {
+      printf("Operands[%d] = %s\n", j, operands[j]);
       j++;
     }
   }
