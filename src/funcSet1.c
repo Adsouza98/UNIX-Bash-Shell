@@ -45,19 +45,23 @@ void displayShell(uid_t uid, uid_t euid, char* userName)
  * [shell_input desciption]
  * @param   char cmd[], user command input string
  * @param   char *arg[], user command arguments input string array
- * User enters a
+ * #TODO: Desciption
+ * @return  0, No Operators {<,>,&,|}
+ * @return  5, Operator ">"
+ * @return  -2, No User Input
 */
-void shellInput(char cmd[], char *arg[])
+int shellInput(char cmd[], char *arg[], char *arg2[])
 {
   char userInput[1024];
-  int i = 0, j = 0;
-  char *userArray[50], *tmp;
+  int i = 0, j = 0, k = 0;
+  char *userArray[50], *userArray2[50], *tmp;
+  bool reDirecTo = false;
 
   // Read Single Line of User Input
   fgets(userInput, 1024, stdin);
 
   //No valid input, return for new user input
-  if (strcmp(userInput, "\n") == 0) {return;}
+  if (strcmp(userInput, "\n") == 0) {return -2;}
 
   // Segments User Input into Command and Arugments, delimited by spaces and newline
   tmp = strtok(userInput, " \n");
@@ -65,8 +69,22 @@ void shellInput(char cmd[], char *arg[])
   // Parse Line into Segmented Command and Arguments then store pointers in
   // temporary array userArray[]
   while (tmp != NULL) {
-    userArray[i++] = strdup(tmp);
-    tmp = strtok(NULL, " \n");
+
+    // Command Whos Output is Redirected to a file
+    if (strcmp(tmp, ">") == 0){
+      printf("Found >\n");
+      tmp = strtok(NULL, " \n");
+      reDirecTo = true;
+    }
+    if (reDirecTo == true) {
+      userArray2[k++] = strdup(tmp);
+      tmp = strtok(NULL, " \n");
+    }
+    if (reDirecTo == false) {
+      userArray[i++] = strdup(tmp);
+      tmp = strtok(NULL, " \n");
+    }
+
   }
 
   // First User Input is the Command
@@ -77,6 +95,17 @@ void shellInput(char cmd[], char *arg[])
     arg[j] = userArray[j];
   }
   arg[i] = NULL; // Terminate the Argument Array with a NULL pointer
+
+  // Operands Arguments
+  if (reDirecTo == true) {
+    for(j=0;j<k;j++) {
+      arg2[j] = userArray2[j];
+    }
+    arg2[k] = NULL; // Terminate the Operand Array with a NULL pointer
+    return 5;
+  }
+  arg2[0] = NULL;
+  return 0;
 }
 
 void clear()
