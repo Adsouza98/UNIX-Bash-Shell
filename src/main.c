@@ -70,6 +70,10 @@ int main ()
       if (operator == 5) {
         printf("Attempting outRedirToFile\n");
         status = outRedirToFile(command, arguments, operands);
+      }
+      else if (operator == 6) {
+        printf("Attempting inRedirFromFile\n");
+        status = inRedirFromFile(command, arguments, operands);
       } else {
         status = -1;
       }
