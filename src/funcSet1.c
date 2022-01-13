@@ -56,6 +56,7 @@ int shellInput(char cmd[], char *arg[], char *arg2[])
   int i = 0, j = 0, k = 0;
   char *userArray[50], *userArray2[50], *tmp;
   bool reDirecTo = false;
+  bool reDirecFrom = false;
 
   // Read Single Line of User Input
   fgets(userInput, 1024, stdin);
@@ -70,20 +71,35 @@ int shellInput(char cmd[], char *arg[], char *arg2[])
   // temporary array userArray[]
   while (tmp != NULL) {
 
-    // Command Whos Output is Redirected to a file
+    // Command Whose Output is Redirected To a file
     if (strcmp(tmp, ">") == 0){
       printf("Found >\n");
       tmp = strtok(NULL, " \n");
       reDirecTo = true;
     }
-    if (reDirecTo == true) {
+
+    // Command Whose Input is Redirected From a File
+    if (strcmp(tmp, "<") == 0) {
+      printf("Found <\n");
+      tmp = strtok(NULL, " \n");
+      reDirecFrom = true;
+    }
+
+
+    if (reDirecTo == true || reDirecFrom == true) {
       userArray2[k++] = strdup(tmp);
       tmp = strtok(NULL, " \n");
-    }
-    if (reDirecTo == false) {
+    } else {
+      // Normal Input
       userArray[i++] = strdup(tmp);
       tmp = strtok(NULL, " \n");
     }
+
+    // // Normal Input
+    // if (reDirecTo == false) {
+    //   userArray[i++] = strdup(tmp);
+    //   tmp = strtok(NULL, " \n");
+    // }
 
   }
 
@@ -97,12 +113,17 @@ int shellInput(char cmd[], char *arg[], char *arg2[])
   arg[i] = NULL; // Terminate the Argument Array with a NULL pointer
 
   // Operands Arguments
-  if (reDirecTo == true) {
+  if (reDirecTo == true || reDirecFrom == true) {
     for(j=0;j<k;j++) {
       arg2[j] = userArray2[j];
     }
     arg2[k] = NULL; // Terminate the Operand Array with a NULL pointer
-    return 5;
+    if (reDirecTo == true) {
+      return 5;
+    }
+    if (reDirecFrom == true) {
+      return 6;
+    }
   }
   arg2[0] = NULL;
   return 0;
