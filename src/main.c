@@ -40,7 +40,7 @@ int main ()
   }
 
   //char *envp[] = {(char *) "PATH=/bin", 0};     // Environment Variables Commands /bin/
-  char *envp[] = {(char *) "PATH=/usr/bin", 0};   // Environment Variables Commands /usr/bin/
+  //char *envp[] = {(char *) "PATH=/usr/bin", 0};   // Environment Variables Commands /usr/bin/
   //char *envpLocal[] = {(char *) "PATH=bin", 0};
 
   while(1) { //Repeat Forever
@@ -74,14 +74,15 @@ int main ()
       if (status == -1) {
         strcpy(cmdUsrBin, "/usr/bin/");              // Command Base Directory
         strcat(cmdUsrBin, command);                  // Concatenate Command to directory string
-        status = execve(cmdUsrBin, arguments, envp); // Execute Command
+        //status = execve(cmdUsrBin, arguments, envp); // Execute Command
+        status = execvp(cmdUsrBin, arguments);
       }
-      // Command is an Executable File in Current Dir
+      // Command is an Executable File in Local Bin Dir
       if (command[0] == '.' && command[1] == '/') {
         printf("Command started with slash\n");
-        //strcpy(cmdUsrLocal, "bin/");
-        //strcat(cmdUsrLocal, command);
-        status = execvp(command, arguments);
+        strcpy(cmdUsrLocal, "bin/");
+        strcat(cmdUsrLocal, command);
+        status = execvp(cmdUsrLocal, arguments);
       }
     }
     //Parent Process
