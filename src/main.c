@@ -20,6 +20,7 @@ int main ()
 {
   char cmdBin[50], cmdUsrBin[50], cmdUsrLocal[50], command[50], *arguments[50], *operands[50];
   int i = 0, j = 0;
+  int k = 0, l = 0;
 
   int status;                                     // Execve Return Status
   int operator;                                   // shellInput Return Status
@@ -47,6 +48,8 @@ int main ()
   while(1) { //Repeat Forever
     i=0;
     j=0;
+    k=0;
+    l=0;
     status = 0;
     printf("Parent ID = %d\n", (int)parentID);
     // Display User Shell Prompt for Command
@@ -74,6 +77,18 @@ int main ()
       else if (operator == 6) {
         printf("Attempting inRedirFromFile\n");
         status = inRedirFromFile(command, arguments, operands);
+      }
+      else if (operator == -2) {
+        strcpy(command, "");
+        while (arguments[k] != NULL) {
+          free(arguments[k]);
+          k++;
+        }
+
+        while (operands[l] != NULL) {
+          free(operands[l]);
+          l++;
+        }
       } else {
         status = -1;
       }
@@ -105,7 +120,7 @@ int main ()
       printf("Parent Process pid = %d\n", (int)getpid());
       wait(NULL);                                     // Parent Wait for Child
 
-    if (status == -1) {
+    if (status < 0 || pid == 0) {
       printf("Process with pid = %d, execve Failed\n", (int)getpid());
       exit(0);
     }
@@ -124,10 +139,12 @@ int main ()
       printf("Argument[%d] = %s\n", i, arguments[i]);
       i++;
     }
+
     while (operands[j] != NULL) {
       printf("Operands[%d] = %s\n", j, operands[j]);
       j++;
     }
+
   }
 
   free(userName);

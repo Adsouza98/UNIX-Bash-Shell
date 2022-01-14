@@ -75,6 +75,11 @@ int shellInput(char cmd[], char *arg[], char *arg2[])
     if (strcmp(tmp, ">") == 0){
       printf("Found >\n");
       tmp = strtok(NULL, " \n");
+
+      if (tmp == NULL) {
+        perror("No Arguments or Operands");
+        return -2;
+      }
       reDirecTo = true;
     }
 
@@ -82,11 +87,16 @@ int shellInput(char cmd[], char *arg[], char *arg2[])
     if (strcmp(tmp, "<") == 0) {
       printf("Found <\n");
       tmp = strtok(NULL, " \n");
+
+      if (tmp == NULL) {
+        perror("No Arguments or Operands");
+        return -2;
+      }
       reDirecFrom = true;
     }
 
-
     if (reDirecTo == true || reDirecFrom == true) {
+      printf("tmp = %s\n", tmp);
       userArray2[k++] = strdup(tmp);
       tmp = strtok(NULL, " \n");
     } else {
@@ -94,12 +104,6 @@ int shellInput(char cmd[], char *arg[], char *arg2[])
       userArray[i++] = strdup(tmp);
       tmp = strtok(NULL, " \n");
     }
-
-    // // Normal Input
-    // if (reDirecTo == false) {
-    //   userArray[i++] = strdup(tmp);
-    //   tmp = strtok(NULL, " \n");
-    // }
 
   }
 
@@ -119,9 +123,11 @@ int shellInput(char cmd[], char *arg[], char *arg2[])
     }
     arg2[k] = NULL; // Terminate the Operand Array with a NULL pointer
     if (reDirecTo == true) {
+      printf("Returing 5 = '>'\n");
       return 5;
     }
     if (reDirecFrom == true) {
+      printf("Returning 6 = '<'\n");
       return 6;
     }
   }

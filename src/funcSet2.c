@@ -31,14 +31,14 @@ int outRedirToFile(char* command, char* arg[], char* fileName[])
   char cmd[50];
   int status;
 
-  if (fileName != NULL) {
+  if (fileName[0] != NULL) {
     // Open File for Writing from STDOUT
     // w = if file does not exist create it, if it does exist rewrite file
     fp = freopen(fileName[0], "w", stdout);
 
     if (fp == NULL){
       perror("File Failed to Open\n");
-      return -1;
+      return -3;
     }
 
     // Command is in PATH=/bin/
@@ -49,7 +49,7 @@ int outRedirToFile(char* command, char* arg[], char* fileName[])
     return status;
   } else {
     perror("File Name is Unreadable\n");
-    return -1;
+    return -4;
   }
 }
 
@@ -59,19 +59,19 @@ int inRedirFromFile(char* command, char* arg[], char* fileName[])
   char cmd[50];
   int status, i = -1;
 
-  if (fileName != NULL) {
+  if (fileName[0] != NULL) {
     // Open File for Reading from STDIN
     // r = Opens file for reading. The file must exist
     fp = fopen(fileName[0], "r");
 
     if (fp == NULL){
       perror("File Failed to Open\n");
-      return -1;
+      return -3;
     }
 
     do {
       i++;
-      
+
       if (arg[i] == NULL) {
         arg[i] = strdup(fileName[0]);
         i++;
@@ -87,6 +87,6 @@ int inRedirFromFile(char* command, char* arg[], char* fileName[])
     return status;
   } else {
     perror("File Name is Unreadable\n");
-    return -1;
+    return -4;
   }
 }
