@@ -28,7 +28,6 @@ void funcSet2Print()
 int outRedirToFile(char* command, char* arg[], char* fileName[])
 {
   FILE* fp;
-  char cmd[50];
   int status;
 
   if (fileName[0] != NULL) {
@@ -41,10 +40,7 @@ int outRedirToFile(char* command, char* arg[], char* fileName[])
       return -3;
     }
 
-    // Command is in PATH=/bin/
-    strcpy(cmd, "/bin/");
-    strcat(cmd, command);
-    status = execvp(cmd, arg);          // Execute in PATH=/bin Dir
+    status = execvp(command, arg);          // Execute in PATH=/bin Dir
     fclose(fp);
     return status;
   } else {
@@ -56,7 +52,6 @@ int outRedirToFile(char* command, char* arg[], char* fileName[])
 int inRedirFromFile(char* command, char* arg[], char* fileName[])
 {
   FILE* fp;
-  char cmd[50];
   int status, i = -1;
 
   if (fileName[0] != NULL) {
@@ -80,13 +75,29 @@ int inRedirFromFile(char* command, char* arg[], char* fileName[])
 
     } while (arg[i] != NULL);
 
-    strcpy(cmd, "/bin/");
-    strcat(cmd, command);
-    status = execvp(cmd, arg);          // Execute in PATH=/bin Dir
-    fclose(fp);
-    return status;
+  status = execvp(command, arg);          // Execute in PATH=/bin Dir
+  fclose(fp);
+  return status;
   } else {
     perror("File Name is Unreadable\n");
     return -4;
   }
+}
+
+int piping(char* command, char* arg1[], int pipefd[])
+{
+  char cmd[50];
+  int status;
+  close(pipefd[0]);                     // Close Read end of Pipe
+  strcpy(cmd, "/bin/");
+  strcat(cmd, command);
+  dup2(pipefd[1], STDOUT_FILENO);       // Replace STDOUT with Write file desciptor of pipe
+  close(pipefd[1]);                     // Close Pipe
+  status = execvp(cmd, arg1);
+  if (status != -1) {
+    return 7;
+  } else {
+    return status;
+  }
+
 }

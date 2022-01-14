@@ -57,6 +57,7 @@ int shellInput(char cmd[], char *arg[], char *arg2[])
   char *userArray[50], *userArray2[50], *tmp;
   bool reDirecTo = false;
   bool reDirecFrom = false;
+  bool piping = false;
 
   // Read Single Line of User Input
   fgets(userInput, 1024, stdin);
@@ -95,7 +96,18 @@ int shellInput(char cmd[], char *arg[], char *arg2[])
       reDirecFrom = true;
     }
 
-    if (reDirecTo == true || reDirecFrom == true) {
+    if (strcmp(tmp, "|") == 0) {
+      printf("Found |\n");
+      tmp = strtok(NULL, " \n");
+
+      if (tmp == NULL) {
+        perror("No Arguments or Operands");
+        return -2;
+      }
+      piping = true;
+    }
+
+    if (reDirecTo == true || reDirecFrom == true || piping == true) {
       printf("tmp = %s\n", tmp);
       userArray2[k++] = strdup(tmp);
       tmp = strtok(NULL, " \n");
@@ -117,7 +129,7 @@ int shellInput(char cmd[], char *arg[], char *arg2[])
   arg[i] = NULL; // Terminate the Argument Array with a NULL pointer
 
   // Operands Arguments
-  if (reDirecTo == true || reDirecFrom == true) {
+  if (reDirecTo == true || reDirecFrom == true || piping == true) {
     for(j=0;j<k;j++) {
       arg2[j] = userArray2[j];
     }
@@ -129,6 +141,10 @@ int shellInput(char cmd[], char *arg[], char *arg2[])
     if (reDirecFrom == true) {
       printf("Returning 6 = '<'\n");
       return 6;
+    }
+    if (piping == true) {
+      printf("Return 7 = '|'\n");
+      return 7;
     }
   }
   arg2[0] = NULL;

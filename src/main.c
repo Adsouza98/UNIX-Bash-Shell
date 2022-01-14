@@ -18,12 +18,16 @@
 
 int main ()
 {
-  char cmdBin[50], cmdUsrBin[50], cmdUsrLocal[50], command[50], *arguments[50], *operands[50];
+  char cmd[50], cmdUsrLocal[50], command[50], *arguments[50], *operands[50];
   int i = 0, j = 0;
   int k = 0, l = 0;
 
   int status;                                     // Execve Return Status
   int operator;                                   // shellInput Return Status
+  int pipefd[2];                                  /* Pipe File Desciptors
+                                                   * pipefd[0] = Read End
+                                                   * pipefd[1] = Write End
+                                                   */
 
   pid_t parentID = getpid();                      // Parent Process ID
   pid_t pid;                                      // Child Process ID
@@ -41,10 +45,6 @@ int main ()
     userName = strdup(p->pw_name);
   }
 
-  //char *envp[] = {(char *) "PATH=/bin", 0};     // Environment Variables Commands /bin/
-  //char *envp[] = {(char *) "PATH=/usr/bin", 0};   // Environment Variables Commands /usr/bin/
-  //char *envpLocal[] = {(char *) "PATH=bin", 0};
-
   while(1) { //Repeat Forever
     i=0;
     j=0;
@@ -58,8 +58,14 @@ int main ()
     // Read Input from Terminal
     operator = shellInput(command, arguments, operands);
 
-    //Forking
+    //Piping
+    if (operator == 7) {
+      if (pipe(pipefd) == -1) {
+        perror("Pipe Failed\n");
+      }
+    }
 
+    //Forking
     // Fork Failed
     if ((pid = fork()) < 0) {
       perror("Fork Failed\n");
@@ -70,21 +76,25 @@ int main ()
     else if (pid == 0) {
       printf("Child with pid = %d, Attempting to Execute Command = %s\n", (int)getpid(), command);
 
-      if (operator == 5) {
+      if (operator == 5) {                        // '>'
         printf("Attempting outRedirToFile\n");
         status = outRedirToFile(command, arguments, operands);
       }
-      else if (operator == 6) {
+      else if (operator == 6) {                   // '<'
         printf("Attempting inRedirFromFile\n");
         status = inRedirFromFile(command, arguments, operands);
-      }
-      else if (operator == -2) {
+
+      } else if (operator == 7) {
+        printf("Attempting Piping Command\n");
+        status = piping(command, arguments, pipefd);
+        status = 7;
+
+      } else if (operator == -2) {                  // No Valid Arguments or Operands
         strcpy(command, "");
         while (arguments[k] != NULL) {
           free(arguments[k]);
           k++;
         }
-
         while (operands[l] != NULL) {
           free(operands[l]);
           l++;
@@ -95,18 +105,13 @@ int main ()
 
       //Command is in PATH=/bin/
       if (status == -1) {
-        strcpy(cmdBin, "/bin/");
-        strcat(cmdBin, command);
-        status = execvp(cmdBin, arguments);          // Execute in PATH=/bin Dir
+        status = execvp(command, arguments);          // Execute in PATH=/bin Dir
       }
 
 
       // Command is in PATH=/usr/bin/
       if (status == -1) {
-        strcpy(cmdUsrBin, "/usr/bin/");              // Command Base Directory
-        strcat(cmdUsrBin, command);                  // Concatenate Command to directory string
-        //status = execve(cmdUsrBin, arguments, envp); // Execute Command
-        status = execvp(cmdUsrBin, arguments);
+        status = execvp(command, arguments);
       }
       // Command is an Executable File in Local Bin Dir
       if (command[0] == '.' && command[1] == '/') {
@@ -116,13 +121,25 @@ int main ()
         status = execvp(cmdUsrLocal, arguments);
       }
     }
-    //Parent Process
+    // Parent Process
       printf("Parent Process pid = %d\n", (int)getpid());
       wait(NULL);                                     // Parent Wait for Child
 
     if (status < 0 || pid == 0) {
       printf("Process with pid = %d, execve Failed\n", (int)getpid());
       exit(0);
+    }
+
+    // Continue Piping
+    if (status == 7) {
+      printf("Continue Piping\n");
+      close(pipefd[1]);                               // Close Write end of Pipe
+      dup2(pipefd[0], STDIN_FILENO);                  // Replace STDIN with Read end of Pipe
+      strcpy(cmd, "bin/");
+      strcat(cmd, operands[0]);
+      dup2(pipefd[0], STDIN_FILENO);
+      close(pipefd[0]);
+      execvp(cmd, operands);
     }
 
     // Clear Command
