@@ -17,6 +17,7 @@
 #include <string.h>                           // For Strings
 #include <stdbool.h>                          // For Bool
 #include <unistd.h>                           // For uid_t
+#include <errno.h>
 
 // Local Libraries
 #include "FuncSet1.h"

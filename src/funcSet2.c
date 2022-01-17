@@ -16,6 +16,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <errno.h>
 
 // Local Libraries
 #include "FuncSet2.h"
@@ -84,20 +85,18 @@ int inRedirFromFile(char* command, char* arg[], char* fileName[])
   }
 }
 
-int piping(char* command, char* arg1[], int pipefd[])
+int pipeIn(char* command, char* arg[], int pipefd[])
 {
-  char cmd[50];
-  int status;
-  close(pipefd[0]);                     // Close Read end of Pipe
-  strcpy(cmd, "/bin/");
-  strcat(cmd, command);
-  dup2(pipefd[1], STDOUT_FILENO);       // Replace STDOUT with Write file desciptor of pipe
-  close(pipefd[1]);                     // Close Pipe
-  status = execvp(cmd, arg1);
-  if (status != -1) {
-    return 7;
-  } else {
-    return status;
-  }
+  close(pipefd[0]);                     // Close Read end of Pipe, Not in use Right now
+  dup2(pipefd[1], STDOUT_FILENO);       // Replace STDOUT File Number with Write file desciptor of pipe
+  close(pipefd[1]);                     // Close Write end of Pipe
+  return execvp(command, arg);          // Execute Command Into Pipe
+}
 
+int pipeOut(char* command, char* arg[], int pipefd[])
+{
+  close(pipefd[1]);                     // Close Write end of Pipe, Not in use Right now
+  dup2(pipefd[0], STDIN_FILENO);        // Replace STDIN File Number with Read File desciptor of pipe
+  close(pipefd[0]);                     // Close Read end of Pipe
+  return execvp(command, arg);
 }

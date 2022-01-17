@@ -10,6 +10,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <errno.h>
 
 //Local Libraries
 #include "FuncSet1.h"
@@ -31,6 +32,7 @@ int main ()
 
   pid_t parentID = getpid();                      // Parent Process ID
   pid_t pid;                                      // Child Process ID
+  pid_t pidPipeOut;                               // Piped Process ID
 
   uid_t uid=getuid(), euid=geteuid();             // User Information Variables
   char *userName;                                 // User ID string
@@ -85,9 +87,9 @@ int main ()
         status = inRedirFromFile(command, arguments, operands);
 
       } else if (operator == 7) {
-        printf("Attempting Piping Command\n");
-        status = piping(command, arguments, pipefd);
-        status = 7;
+        // Attempting Input Piping Command
+        printf("Attempting Input Piping Command\n");
+        status = pipeIn(command, arguments, pipefd);
 
       } else if (operator == -2) {                  // No Valid Arguments or Operands
         strcpy(command, "");
@@ -103,16 +105,11 @@ int main ()
         status = -1;
       }
 
-      //Command is in PATH=/bin/
+      //Command is in $PATH
       if (status == -1) {
         status = execvp(command, arguments);          // Execute in PATH=/bin Dir
       }
 
-
-      // Command is in PATH=/usr/bin/
-      if (status == -1) {
-        status = execvp(command, arguments);
-      }
       // Command is an Executable File in Local Bin Dir
       if (command[0] == '.' && command[1] == '/') {
         printf("Command started with slash\n");
@@ -121,25 +118,36 @@ int main ()
         status = execvp(cmdUsrLocal, arguments);
       }
     }
+
+    if (operator == 7) {
+      // Attempting Output Piping Command
+      pidPipeOut = fork();
+      if (pidPipeOut < 0) {
+        perror("pidPipeOut Failed\n");
+        exit(-1);
+      }
+      if (pidPipeOut == 0) {
+        status = pipeOut(operands[0], operands, pipefd);
+      }
+    }
+
     // Parent Process
-      printf("Parent Process pid = %d\n", (int)getpid());
+    if (operator == 7) {
+      // Close Pipe Ends in the Parent Process
+      close(pipefd[0]);
+      close(pipefd[1]);
+      // Wait for Child Piping Processes to Finish
+      waitpid(pid, NULL, 0);
+      waitpid(pidPipeOut, NULL, 0);
+    } else {
       wait(NULL);                                     // Parent Wait for Child
+    }
+    printf("Parent Process pid = %d\n", (int)getpid());
+
 
     if (status < 0 || pid == 0) {
       printf("Process with pid = %d, execve Failed\n", (int)getpid());
       exit(0);
-    }
-
-    // Continue Piping
-    if (status == 7) {
-      printf("Continue Piping\n");
-      close(pipefd[1]);                               // Close Write end of Pipe
-      dup2(pipefd[0], STDIN_FILENO);                  // Replace STDIN with Read end of Pipe
-      strcpy(cmd, "bin/");
-      strcat(cmd, operands[0]);
-      dup2(pipefd[0], STDIN_FILENO);
-      close(pipefd[0]);
-      execvp(cmd, operands);
     }
 
     // Clear Command
