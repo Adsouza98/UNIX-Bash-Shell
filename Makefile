@@ -7,7 +7,7 @@ SRC = ./src/
 
 # Override Default Variables
 CC = gcc																	# Compiler
-CFLAGS = -c -g -Wall --std=c11 -Iinclude 	# C Compiler Flags
+CFLAGS = -c -g -Wall -Wpedantic --std=gnu99 -Iinclude 	# C Compiler Flags
 
 # Defualt Rule
 all: main.o funcSet1.o funcSet2.o funcSet3.o testfile.o
