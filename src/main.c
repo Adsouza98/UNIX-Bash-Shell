@@ -19,9 +19,10 @@
 
 int main ()
 {
-  char cmd[50], cmdUsrLocal[50], command[50], *arguments[50], *operands[50];
+  char cmdUsrLocal[500], command[500], *arguments[500], *operands[500];
   int i = 0, j = 0;
   int k = 0, l = 0;
+  int index = 0;
 
   int status;                                     // Execve Return Status
   int operator;                                   // shellInput Return Status
@@ -86,7 +87,7 @@ int main ()
         printf("Attempting inRedirFromFile\n");
         status = inRedirFromFile(command, arguments, operands);
 
-      } else if (operator == 7) {
+      } else if (operator == 7) {                 // '|'
         // Attempting Input Piping Command
         printf("Attempting Input Piping Command\n");
         status = pipeIn(command, arguments, pipefd);
@@ -154,8 +155,20 @@ int main ()
     if (strcmp(command, "clear") == 0) {
       clear();
     }
+    // History Command
+    else if (strcmp(command, "history") == 0) {
+      if (arguments[1] != NULL && strcmp(arguments[1], "-c") == 0) {
+        historyDelete();
+      }
+      else if (arguments[1] != NULL && (index = atoi(arguments[1])) != 0) {
+        historyRead(index);
+      } else {
+        historyRead(0);
+      }
+    }
     // Exit Command
     else if (strcmp(command, "exit") == 0) {
+      historyDelete();
       exit(0);
     }
 

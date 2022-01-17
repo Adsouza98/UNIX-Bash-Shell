@@ -2,5 +2,8 @@
 #define FuncSet3
 
 void funcSet3Print();
+int historyWrite(char* userInput);
+int historyRead(int index);
+int historyDelete();
 
 #endif

@@ -21,6 +21,7 @@
 
 // Local Libraries
 #include "FuncSet1.h"
+#include "FuncSet3.h"
 
 
 /*
@@ -53,15 +54,17 @@ void displayShell(uid_t uid, uid_t euid, char* userName)
 */
 int shellInput(char cmd[], char *arg[], char *arg2[])
 {
-  char userInput[1024];
+  char userInput[500];
   int i = 0, j = 0, k = 0;
-  char *userArray[50], *userArray2[50], *tmp;
+  char *userArray[500], *userArray2[500], *tmp;
   bool reDirecTo = false;
   bool reDirecFrom = false;
   bool piping = false;
 
   // Read Single Line of User Input
-  fgets(userInput, 1024, stdin);
+  fgets(userInput, 500, stdin);
+
+  historyWrite(userInput);
 
   //No valid input, return for new user input
   if (strcmp(userInput, "\n") == 0) {return -2;}
