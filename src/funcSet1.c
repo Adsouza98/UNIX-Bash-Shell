@@ -32,14 +32,16 @@
 void displayShell(uid_t uid, uid_t euid, char* userName)
 {
   static bool bootup = true;
+  char cwd[500];
+
   if (bootup == true) { //On bootup Clear Terminal Window
     system("clear");
     bootup = false;
   }
   if (uid < 0 || uid!=euid) {          // Privalage Check
-    printf("[%s@socs]$ ", userName); // Regular User
+    printf("[%s@socs]:%s> ", userName, getcwd(cwd, sizeof(cwd))); // Regular User
   } else {
-    printf("[%s@socs]#", userName);  // Super User
+    printf("[%s@socs]:%s> ", userName, getcwd(cwd, sizeof(cwd)));  // Super User
   }
 }
 

@@ -155,6 +155,12 @@ int main ()
     if (strcmp(command, "clear") == 0) {
       clear();
     }
+    // Change Directory Command
+    else if (strcmp(command, "cd") == 0) {
+      if (arguments[1] != NULL) {
+        chdir(arguments[1]);
+      }
+    }
     // History Command
     else if (strcmp(command, "history") == 0) {
       if (arguments[1] != NULL && strcmp(arguments[1], "-c") == 0) {
