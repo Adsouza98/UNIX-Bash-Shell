@@ -5,3 +5,5 @@ execP: Include normal search path for executable (PATH=/bin)
 
 echo $PATH
 /usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games
+
+mhazari@uoguelph.ca
