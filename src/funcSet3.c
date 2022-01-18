@@ -10,6 +10,9 @@
 // Global Variable
 int commandCount = 0;
 
+// Shared Global Variables
+extern char myHISTFILE[500];
+
 // Standard Libraries
 #include <stdio.h>
 #include <stdlib.h>
@@ -17,6 +20,7 @@ int commandCount = 0;
 
 // Local Libraries
 #include "FuncSet3.h"
+#include "FuncSet1.h"
 
 void funcSet3Print()
 {
@@ -26,7 +30,7 @@ void funcSet3Print()
 int historyWrite(char* userInput)
 {
   FILE* fp;
-  fp = fopen("history.txt", "a");
+  fp = fopen(myHISTFILE, "a");
   commandCount++;
 
   if (fp == NULL) {
@@ -46,7 +50,7 @@ int historyRead(int index)
   char c;
   int count = 0;
 
-  fp = fopen("history.txt", "r");
+  fp = fopen(myHISTFILE, "r");
 
   if (fp == NULL) {
     perror("File Failed to Open\n");
@@ -77,7 +81,7 @@ int historyRead(int index)
 
 int historyDelete()
 {
-  if (remove("history.txt") == 0) {
+  if (remove(myHISTFILE) == 0) {
     printf("The History File Deleted Successfully\n");
     commandCount = 0;
     return 0;
