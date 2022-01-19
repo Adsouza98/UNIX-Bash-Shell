@@ -7,10 +7,6 @@
  * Set 1 Functions of Assignment 1
 */
 
-// Global Variables
-char baseDir[500];
-char myHISTFILE[500];
-
 // Define Statements
 // To Allow use of strtok(), without compiler warnings, taken from Man-Page
 #define _POSIX_C_SOURCE 200809L
@@ -40,12 +36,6 @@ void displayShell(uid_t uid, uid_t euid, char* userName)
 
   if (bootup == true) { //On bootup Clear Terminal Window
     system("clear");
-    if (getcwd(baseDir, sizeof(baseDir)) == NULL) {
-      perror("Error Getting Current Working Directory\n");
-    } else {
-      strcpy(myHISTFILE, baseDir);
-      strcat(myHISTFILE, "/bin/.CIS3110_history");
-    }
     bootup = false;
   }
   if (uid < 0 || uid!=euid) {          // Privalage Check

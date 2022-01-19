@@ -1,5 +1,9 @@
-//Define Statements
-//To Allow use of strtok(), without compiler warnings, taken from Man-Page
+// Global Variables
+char myHOME[500];
+char myHISTFILE[500];
+
+// Define Statements
+// To Allow use of strtok(), without compiler warnings, taken from Man-Page
 #define _POSIX_C_SOURCE 200809L
 
 // Standard Libraries
@@ -41,11 +45,21 @@ int main ()
 
   //User Name Check
   if (((p = getpwuid(uid)) == NULL) ) {
-    fprintf(stderr, "%s", "User Name Error\n");
+    perror("getpwuid error\n");
     userName = (char *) malloc(5);
     strcpy(userName, "user");
+
+    if (getcwd(myHOME, sizeof(myHOME)) == NULL) {
+      perror("Error Getting Current Working Directory\n");
+    } else {
+      strcpy(myHISTFILE, myHOME);
+      strcat(myHISTFILE, "/bin/.CIS3110_history");
+    }
   } else {
     userName = strdup(p->pw_name);
+    strcpy(myHOME, p->pw_dir);
+    strcpy(myHISTFILE, myHOME);
+    strcat(myHISTFILE, "/.CIS3110_history");
   }
 
   while(1) { //Repeat Forever
@@ -158,7 +172,11 @@ int main ()
     // Change Directory Command
     else if (strcmp(command, "cd") == 0) {
       if (arguments[1] != NULL) {
-        chdir(arguments[1]);
+        if (strcmp(arguments[1], "~") == 0) {
+          chdir(myHOME);
+        } else {
+          chdir(arguments[1]);
+        }
       }
     }
     // History Command
