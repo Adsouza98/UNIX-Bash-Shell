@@ -102,7 +102,7 @@ int shellInput(char cmd[], char *arg[], char *arg2[])
       }
       reDirecFrom = true;
     }
-
+    // Command Whos Output is Piped into the Input of Another Command
     if (strcmp(tmp, "|") == 0) {
       printf("Found |\n");
       tmp = strtok(NULL, " \n");

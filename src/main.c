@@ -82,7 +82,7 @@ int main ()
         printf("Attempting Input Piping Command\n");
         status = pipeIn(command, arguments, pipefd);
 
-      } else if (operator == -2) {                  // No Valid Arguments or Operands
+      } else if (operator == -2) {                // No Valid Arguments or Operands
         strcpy(command, "");
         while (arguments[k] != NULL) {
           free(arguments[k]);
@@ -98,7 +98,7 @@ int main ()
 
       //Command is in $PATH
       if (status == -1) {
-        status = execvp(command, arguments);          // Execute in PATH=/bin Dir
+        status = execvp(command, arguments);      // Execute in PATH=/bin Dir
       }
 
       // Command is an Executable File in Local Bin Dir
@@ -131,7 +131,7 @@ int main ()
       waitpid(pid, NULL, 0);
       waitpid(pidPipeOut, NULL, 0);
     } else {
-      wait(NULL);                                     // Parent Wait for Child
+      wait(NULL);                                 // Parent Wait for Child
     }
     printf("Parent Process pid = %d\n", (int)getpid());
 
