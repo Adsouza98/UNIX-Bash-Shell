@@ -7,6 +7,14 @@ char myUSER[50];
 // To Allow use of strtok(), without compiler warnings, taken from Man-Page
 #define _POSIX_C_SOURCE 200809L
 
+//#define DEBUG
+
+#ifdef DEBUG
+# define DEBUG_PRINT(x) printf x
+#else
+# define DEBUG_PRINT(x) do {} while (0)
+#endif
+
 // Standard Libraries
 #include <stdio.h>
 #include <stdlib.h>
@@ -44,7 +52,8 @@ int main ()
     k=0;
     l=0;
     status = 0;
-    printf("Parent ID = %d\n", (int)parentID);
+
+    DEBUG_PRINT(("Debug Parent ID = %d\n", (int)parentID));
     // Display User Shell Prompt for Command
     displayShell();
 
@@ -67,19 +76,19 @@ int main ()
     }
     // Child Process
     else if (pid == 0) {
-      printf("Child with pid = %d, Attempting to Execute Command = %s\n", (int)getpid(), command);
+      DEBUG_PRINT(("Child with pid = %d, Attempting to Execute Command = %s\n", (int)getpid(), command));
 
       if (operator == 5) {                        // '>'
-        printf("Attempting outRedirToFile\n");
+        DEBUG_PRINT(("Attempting outRedirToFile\n"));
         status = outRedirToFile(command, arguments, operands);
       }
       else if (operator == 6) {                   // '<'
-        printf("Attempting inRedirFromFile\n");
+        DEBUG_PRINT(("Attempting inRedirFromFile\n"));
         status = inRedirFromFile(command, arguments, operands);
 
       } else if (operator == 7) {                 // '|'
         // Attempting Input Piping Command
-        printf("Attempting Input Piping Command\n");
+        DEBUG_PRINT(("Attempting Input Piping Command\n"));
         status = pipeIn(command, arguments, pipefd);
 
       } else if (operator == -2) {                // No Valid Arguments or Operands
@@ -103,7 +112,7 @@ int main ()
 
       // Command is an Executable File in Local Bin Dir
       if (command[0] == '.' && command[1] == '/') {
-        printf("Command started with slash\n");
+        DEBUG_PRINT(("Command started with slash\n"));
         strcpy(cmdUsrLocal, "bin/");
         strcat(cmdUsrLocal, command);
         status = execvp(cmdUsrLocal, arguments);
@@ -133,11 +142,11 @@ int main ()
     } else {
       wait(NULL);                                 // Parent Wait for Child
     }
-    printf("Parent Process pid = %d\n", (int)getpid());
+    DEBUG_PRINT(("Parent Process pid = %d\n", (int)getpid()));
 
 
     if (status < 0 || pid == 0) {
-      printf("Process with pid = %d, execve Failed\n", (int)getpid());
+      DEBUG_PRINT(("Process with pid = %d, execve Failed\n", (int)getpid()));
       exit(0);
     }
 
@@ -178,14 +187,14 @@ int main ()
       exit(0);
     }
 
-    printf("Command = %s\n", command);
+    DEBUG_PRINT(("Command = %s\n", command));
     while (arguments[i] != NULL) {
-      printf("Argument[%d] = %s\n", i, arguments[i]);
+      DEBUG_PRINT(("Argument[%d] = %s\n", i, arguments[i]));
       i++;
     }
 
     while (operands[j] != NULL) {
-      printf("Operands[%d] = %s\n", j, operands[j]);
+      DEBUG_PRINT(("Operands[%d] = %s\n", j, operands[j]));
       j++;
     }
 

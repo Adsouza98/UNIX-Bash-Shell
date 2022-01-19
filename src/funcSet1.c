@@ -16,6 +16,14 @@ extern char myUSER[50];
 // To Allow use of strtok(), without compiler warnings, taken from Man-Page
 #define _POSIX_C_SOURCE 200809L
 
+//#define DEBUG
+
+#ifdef DEBUG
+# define DEBUG_PRINT(x) printf x
+#else
+# define DEBUG_PRINT(x) do {} while (0)
+#endif
+
 // Standard Libraries
 #include <stdio.h>
 #include <stdlib.h>
@@ -81,7 +89,7 @@ int shellInput(char cmd[], char *arg[], char *arg2[])
 
     // Command Whose Output is Redirected To a file
     if (strcmp(tmp, ">") == 0){
-      printf("Found >\n");
+      DEBUG_PRINT(("Found >\n"));
       tmp = strtok(NULL, " \n");
 
       if (tmp == NULL) {
@@ -93,7 +101,7 @@ int shellInput(char cmd[], char *arg[], char *arg2[])
 
     // Command Whose Input is Redirected From a File
     if (strcmp(tmp, "<") == 0) {
-      printf("Found <\n");
+      DEBUG_PRINT(("Found <\n"));
       tmp = strtok(NULL, " \n");
 
       if (tmp == NULL) {
@@ -104,7 +112,7 @@ int shellInput(char cmd[], char *arg[], char *arg2[])
     }
     // Command Whos Output is Piped into the Input of Another Command
     if (strcmp(tmp, "|") == 0) {
-      printf("Found |\n");
+      DEBUG_PRINT(("Found |\n"));
       tmp = strtok(NULL, " \n");
 
       if (tmp == NULL) {
@@ -115,7 +123,7 @@ int shellInput(char cmd[], char *arg[], char *arg2[])
     }
 
     if (reDirecTo == true || reDirecFrom == true || piping == true) {
-      printf("tmp = %s\n", tmp);
+      DEBUG_PRINT(("tmp = %s\n", tmp));
       userArray2[k++] = strdup(tmp);
       tmp = strtok(NULL, " \n");
     } else {
@@ -142,15 +150,15 @@ int shellInput(char cmd[], char *arg[], char *arg2[])
     }
     arg2[k] = NULL; // Terminate the Operand Array with a NULL pointer
     if (reDirecTo == true) {
-      printf("Returing 5 = '>'\n");
+      DEBUG_PRINT(("Returing 5 = '>'\n"));
       return 5;
     }
     if (reDirecFrom == true) {
-      printf("Returning 6 = '<'\n");
+      DEBUG_PRINT(("Returning 6 = '<'\n"));
       return 6;
     }
     if (piping == true) {
-      printf("Return 7 = '|'\n");
+      DEBUG_PRINT(("Return 7 = '|'\n"));
       return 7;
     }
   }

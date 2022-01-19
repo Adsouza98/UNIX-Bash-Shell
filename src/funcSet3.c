@@ -15,6 +15,15 @@ extern char myHOME[500];
 extern char myHISTFILE[500];
 extern char myUSER[50];
 
+// Define Statements
+//#define DEBUG
+
+#ifdef DEBUG
+# define DEBUG_PRINT(x) printf x
+#else
+# define DEBUG_PRINT(x) do {} while (0)
+#endif
+
 // Standard Libraries
 #include <stdio.h>
 #include <stdlib.h>
@@ -89,11 +98,11 @@ int historyRead(int index)
 int historyDelete()
 {
   if (remove(myHISTFILE) == 0) {
-    printf("The History File Deleted Successfully\n");
+    DEBUG_PRINT(("The History File Deleted Successfully\n"));
     commandCount = 0;
     return 0;
   } else {
-    printf("The history File Was Not Deleted\n");
+    DEBUG_PRINT(("The history File Was Not Deleted\n"));
     return -1;
   }
   return 1;

@@ -7,9 +7,17 @@
  * Set 2 Functions of Assignment 1
 */
 
-//Define Statements
-//To Allow use of strtok(), without compiler warnings, taken from Man-Page
+// Define Statements
+// To Allow use of strtok(), without compiler warnings, taken from Man-Page
 #define _POSIX_C_SOURCE 200809L
+
+//#define DEBUG
+
+#ifdef DEBUG
+# define DEBUG_PRINT(x) printf x
+#else
+# define DEBUG_PRINT(x) do {} while (0)
+#endif
 
 // Standard Libraries
 #include <stdio.h>
