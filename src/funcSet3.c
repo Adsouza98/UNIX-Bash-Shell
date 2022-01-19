@@ -11,12 +11,17 @@
 int commandCount = 0;
 
 // Shared Global Variables
+extern char myHOME[500];
 extern char myHISTFILE[500];
+extern char myUSER[50];
 
 // Standard Libraries
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
+#include <pwd.h>
+#include <sys/types.h>
 
 // Local Libraries
 #include "FuncSet3.h"
@@ -90,4 +95,58 @@ int historyDelete()
     return -1;
   }
   return 1;
+}
+
+void setEnvironment()
+{
+  char myHISTFILEenv[510] = "myHISTFILE=";
+  char myUSERenv[60] = "myUSER=";
+  char myHOMEenv[510] = "myHOME=";
+
+  uid_t uid = getuid();
+  //uid_t euid = geteuid();
+  struct passwd *p;
+
+  // Passwd Struct Check
+  if (((p = getpwuid(uid)) == NULL)) {
+    perror("getpwuid error\n");
+
+    strcpy(myUSER, "user");
+
+    // Setting Environment Variable $myUSER
+    strcat(myUSERenv, myUSER);
+    putenv(myUSERenv);
+
+    if (getcwd(myHOME, sizeof(myHOME)) == NULL) {
+      perror("Error Getting Current Working Directory\n");
+    } else {
+      // Setting Environment Variable $myHOME
+      strcat(myHOMEenv, myHOME);
+      putenv(myHOMEenv);
+
+      strcpy(myHISTFILE, myHOME);
+      strcat(myHISTFILE, "/bin/.CIS3110_history");
+
+      // Setting Environment Variable $myHISTFILE
+      strcat(myHISTFILEenv, myHISTFILE);
+      putenv(myHISTFILEenv);
+    }
+  } else {
+    strcpy(myUSER, p->pw_name);
+    // Seting Environment Variable $myUSER
+    strcat(myUSERenv, myUSER);
+    putenv(myUSERenv);
+
+    strcpy(myHOME, p->pw_dir);
+    // Setting Environment Variable $myHOME
+    strcat(myHOMEenv, myHOME);
+    putenv(myHOMEenv);
+
+    strcpy(myHISTFILE, myHOME);
+    strcat(myHISTFILE, "/.CIS3110_history");
+
+    // Setting Environment Variable $myHISTFILE
+    strcat(myHISTFILEenv, myHISTFILE);
+    putenv(myHISTFILEenv);
+  }
 }

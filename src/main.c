@@ -1,6 +1,7 @@
 // Global Variables
 char myHOME[500];
 char myHISTFILE[500];
+char myUSER[50];
 
 // Define Statements
 // To Allow use of strtok(), without compiler warnings, taken from Man-Page
@@ -10,7 +11,6 @@ char myHISTFILE[500];
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <pwd.h>
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -30,37 +30,13 @@ int main ()
 
   int status;                                     // Execve Return Status
   int operator;                                   // shellInput Return Status
-  int pipefd[2];                                  /* Pipe File Desciptors
-                                                   * pipefd[0] = Read End
-                                                   * pipefd[1] = Write End
-                                                   */
+  int pipefd[2];                                  // Pipe File Desciptors, pipefd[0] = Read End, pipefd[1] = Write End
 
   pid_t parentID = getpid();                      // Parent Process ID
   pid_t pid;                                      // Child Process ID
   pid_t pidPipeOut;                               // Piped Process ID
 
-  uid_t uid=getuid(), euid=geteuid();             // User Information Variables
-  char *userName;                                 // User ID string
-  struct passwd *p;                               // User Infromation Struct
-
-  //User Name Check
-  if (((p = getpwuid(uid)) == NULL) ) {
-    perror("getpwuid error\n");
-    userName = (char *) malloc(5);
-    strcpy(userName, "user");
-
-    if (getcwd(myHOME, sizeof(myHOME)) == NULL) {
-      perror("Error Getting Current Working Directory\n");
-    } else {
-      strcpy(myHISTFILE, myHOME);
-      strcat(myHISTFILE, "/bin/.CIS3110_history");
-    }
-  } else {
-    userName = strdup(p->pw_name);
-    strcpy(myHOME, p->pw_dir);
-    strcpy(myHISTFILE, myHOME);
-    strcat(myHISTFILE, "/.CIS3110_history");
-  }
+  setEnvironment();
 
   while(1) { //Repeat Forever
     i=0;
@@ -70,7 +46,7 @@ int main ()
     status = 0;
     printf("Parent ID = %d\n", (int)parentID);
     // Display User Shell Prompt for Command
-    displayShell(uid, euid, userName);
+    displayShell();
 
     // Read Input from Terminal
     operator = shellInput(command, arguments, operands);
@@ -190,6 +166,12 @@ int main ()
         historyRead(0);
       }
     }
+    // Export Command
+    else if (strcmp(command, "export") == 0) {
+      printf("myUSER=%s\n", myUSER);
+      printf("myHOME=%s\n", myHOME);
+      printf("myHISTFILE=%s\n", myHISTFILE);
+    }
     // Exit Command
     else if (strcmp(command, "exit") == 0) {
       historyDelete();
@@ -209,6 +191,5 @@ int main ()
 
   }
 
-  free(userName);
   return 0;
 }

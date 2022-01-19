@@ -7,6 +7,11 @@
  * Set 1 Functions of Assignment 1
 */
 
+// Shared Global Variables
+extern char myHOME[500];
+extern char myHISTFILE[500];
+extern char myUSER[50];
+
 // Define Statements
 // To Allow use of strtok(), without compiler warnings, taken from Man-Page
 #define _POSIX_C_SOURCE 200809L
@@ -29,7 +34,7 @@
  * If Shell is started for the first time (on bootup)
  * function clears terminal display and prints Shell prompt for user
 */
-void displayShell(uid_t uid, uid_t euid, char* userName)
+void displayShell()
 {
   static bool bootup = true;
   char cwd[500];
@@ -38,11 +43,7 @@ void displayShell(uid_t uid, uid_t euid, char* userName)
     system("clear");
     bootup = false;
   }
-  if (uid < 0 || uid!=euid) {          // Privalage Check
-    printf("[%s@socs]:%s> ", userName, getcwd(cwd, sizeof(cwd))); // Regular User
-  } else {
-    printf("[%s@socs]:%s> ", userName, getcwd(cwd, sizeof(cwd)));  // Super User
-  }
+  printf("[%s@socs]:%s> ", myUSER, getcwd(cwd, sizeof(cwd)));
 }
 
 /*
