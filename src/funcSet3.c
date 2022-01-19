@@ -36,16 +36,18 @@ int historyWrite(char* userInput)
 {
   FILE* fp;
   fp = fopen(myHISTFILE, "a");
-  commandCount++;
 
   if (fp == NULL) {
     perror("File Failed to Open\n");
     return -1;
   }
-  //(space) number (2 spaces) command line
-  fprintf(fp, " %d  %s", commandCount, userInput);
-  fclose(fp);
 
+  if (strcmp(userInput, "\n") != 0) {
+    commandCount++;
+    //(space) number (2 spaces) command line
+    fprintf(fp, " %d  %s", commandCount, userInput);
+    fclose(fp);
+  }
   return 0;
 }
 
