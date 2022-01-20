@@ -16,7 +16,7 @@ extern char myUSER[50];
 // To Allow use of strtok(), without compiler warnings, taken from Man-Page
 #define _POSIX_C_SOURCE 200809L
 
-//#define DEBUG
+// #define DEBUG
 
 #ifdef DEBUG
 # define DEBUG_PRINT(x) printf x
@@ -71,6 +71,7 @@ int shellInput(char cmd[], char *arg[], char *arg2[])
   bool reDirecTo = false;
   bool reDirecFrom = false;
   bool piping = false;
+  bool backgroundExec = false;
 
   // Read Single Line of User Input
   fgets(userInput, 500, stdin);
@@ -80,6 +81,9 @@ int shellInput(char cmd[], char *arg[], char *arg2[])
   //No valid input, return for new user input
   if (strcmp(userInput, "\n") == 0) {return -2;}
 
+  // Set first value of userArray to NULL for error checking
+  userArray[0] = NULL;
+
   // Segments User Input into Command and Arugments, delimited by spaces and newline
   tmp = strtok(userInput, " \n");
 
@@ -88,12 +92,12 @@ int shellInput(char cmd[], char *arg[], char *arg2[])
   while (tmp != NULL) {
 
     // Command Whose Output is Redirected To a file
-    if (strcmp(tmp, ">") == 0){
+    if (strcmp(tmp, ">") == 0) {
       DEBUG_PRINT(("Found >\n"));
       tmp = strtok(NULL, " \n");
 
       if (tmp == NULL) {
-        perror("No Arguments or Operands");
+        fprintf(stderr, "No Arguments or Operands\n");
         return -2;
       }
       reDirecTo = true;
@@ -105,7 +109,7 @@ int shellInput(char cmd[], char *arg[], char *arg2[])
       tmp = strtok(NULL, " \n");
 
       if (tmp == NULL) {
-        perror("No Arguments or Operands");
+        fprintf(stderr, "No Arguments or Operands\n");
         return -2;
       }
       reDirecFrom = true;
@@ -116,16 +120,33 @@ int shellInput(char cmd[], char *arg[], char *arg2[])
       tmp = strtok(NULL, " \n");
 
       if (tmp == NULL) {
-        perror("No Arguments or Operands");
+        fprintf(stderr, "No Arguments or Operands\n");
         return -2;
       }
       piping = true;
+    }
+
+    if (strcmp(tmp, "&") == 0) {
+      DEBUG_PRINT(("Found &\n"));
+      tmp = strtok(NULL, " \n");
+
+      if (userArray[0] == NULL) {
+        fprintf(stderr, "No Arguments or Operands\n");
+        return -2;
+      }
+
+      if (tmp == NULL) {
+        DEBUG_PRINT(("& is Last character inputed\n"));
+        backgroundExec = true;
+      }
     }
 
     if (reDirecTo == true || reDirecFrom == true || piping == true) {
       DEBUG_PRINT(("tmp = %s\n", tmp));
       userArray2[k++] = strdup(tmp);
       tmp = strtok(NULL, " \n");
+    } else if (backgroundExec == true) {
+      break;
     } else {
       // Normal Input
       userArray[i++] = strdup(tmp);
@@ -133,7 +154,6 @@ int shellInput(char cmd[], char *arg[], char *arg2[])
     }
 
   }
-
   // First User Input is the Command
   strcpy(cmd, userArray[0]);
 
@@ -142,6 +162,11 @@ int shellInput(char cmd[], char *arg[], char *arg2[])
     arg[j] = userArray[j];
   }
   arg[i] = NULL; // Terminate the Argument Array with a NULL pointer
+
+  if (backgroundExec == true) {
+    DEBUG_PRINT(("Returning 4 = '&'\n"));
+    return 4;
+  }
 
   // Operands Arguments
   if (reDirecTo == true || reDirecFrom == true || piping == true) {
@@ -158,7 +183,7 @@ int shellInput(char cmd[], char *arg[], char *arg2[])
       return 6;
     }
     if (piping == true) {
-      DEBUG_PRINT(("Return 7 = '|'\n"));
+      DEBUG_PRINT(("Returning 7 = '|'\n"));
       return 7;
     }
   }

@@ -11,7 +11,7 @@
 // To Allow use of strtok(), without compiler warnings, taken from Man-Page
 #define _POSIX_C_SOURCE 200809L
 
-//#define DEBUG
+// #define DEBUG
 
 #ifdef DEBUG
 # define DEBUG_PRINT(x) printf x
@@ -45,7 +45,7 @@ int outRedirToFile(char* command, char* arg[], char* fileName[])
     fp = freopen(fileName[0], "w", stdout);
 
     if (fp == NULL){
-      perror("File Failed to Open\n");
+      perror("File Failed to Open");
       return -3;
     }
 

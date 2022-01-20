@@ -16,7 +16,7 @@ extern char myHISTFILE[500];
 extern char myUSER[50];
 
 // Define Statements
-//#define DEBUG
+// #define DEBUG
 
 #ifdef DEBUG
 # define DEBUG_PRINT(x) printf x

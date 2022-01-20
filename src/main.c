@@ -7,7 +7,7 @@ char myUSER[50];
 // To Allow use of strtok(), without compiler warnings, taken from Man-Page
 #define _POSIX_C_SOURCE 200809L
 
-//#define DEBUG
+// #define DEBUG
 
 #ifdef DEBUG
 # define DEBUG_PRINT(x) printf x
