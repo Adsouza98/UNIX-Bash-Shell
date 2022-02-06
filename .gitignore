@@ -1,11 +1,13 @@
 # Ignore Assignment Desciption Folder
 /docs
+/bin
 
 # Ignore Compiled Source Executables
 *.a
 *.o
 adsouz03Shell
-testfile
+testfile.txt
+sortfile.txt
 
 # Ignore OS generated Files
 .DS_Store

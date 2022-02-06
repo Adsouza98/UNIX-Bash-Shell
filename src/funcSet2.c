@@ -84,8 +84,8 @@ int inRedirFromFile(char* command, char* arg[], char* fileName[])
 
     } while (arg[i] != NULL);
 
-  status = execvp(command, arg);          // Execute in PATH=/bin Dir
   fclose(fp);
+  status = execvp(command, arg);          // Execute in PATH=/bin Dir
   return status;
   } else {
     perror("File Name is Unreadable\n");
