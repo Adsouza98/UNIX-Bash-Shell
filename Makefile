@@ -10,12 +10,12 @@ CC = gcc																	# Compiler
 CFLAGS = -c -g -Wall -Wpedantic --std=gnu99 -Iinclude 	# C Compiler Flags
 
 # Defualt Rule
-all: main.o funcSet1.o funcSet2.o funcSet3.o testfile.o
-	$(CC) $(BIN)main.o $(BIN)funcSet1.o $(BIN)funcSet2.o $(BIN)funcSet3.o -o $(BIN)adsouz03Shell
+all: myShell.o funcSet1.o funcSet2.o funcSet3.o testfile.o
+	$(CC) $(BIN)myShell.o $(BIN)funcSet1.o $(BIN)funcSet2.o $(BIN)funcSet3.o -o $(BIN)myShell
 	$(CC) $(BIN)testfile.o -o $(BIN)testfile
 
-main.o:
-	$(CC) $(CFLAGS) -c $(SRC)main.c -o $(BIN)main.o
+myShell.o:
+	$(CC) $(CFLAGS) -c $(SRC)myShell.c -o $(BIN)myShell.o
 
 funcSet1.o:
 	$(CC) $(CFLAGS) -c $(SRC)funcSet1.c -o $(BIN)funcSet1.o
@@ -35,7 +35,7 @@ clean:
 	rm -f -r $(BIN)*
 
 run:
-	$(BIN)adsouz03Shell
+	$(BIN)myShell
 
 valgrind:
-	valgrind --leak-check=yes $(BIN)adsouz03Shell
+	valgrind --leak-check=yes $(BIN)myShell
