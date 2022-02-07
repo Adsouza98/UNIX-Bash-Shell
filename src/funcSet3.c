@@ -2,7 +2,7 @@
  * Andre D'Souza
  * #:0952594
  * Deadline: 02/02/22
- *
+ * Extension: 02/06/22
  * This file comprises the functions to complete
  * Set 3 Functions of Assignment 1
 */
@@ -15,7 +15,7 @@ extern char myHOME[500];
 extern char myHISTFILE[500];
 extern char myUSER[50];
 
-// Define Statements
+//Uncommnet to toggle ON debug print statements
 // #define DEBUG
 
 #ifdef DEBUG
@@ -36,11 +36,19 @@ extern char myUSER[50];
 #include "FuncSet3.h"
 #include "FuncSet1.h"
 
-void funcSet3Print()
-{
-  printf("Hello FuncSet3!\n");
-}
 
+/*
+ * @Desciption:
+ * Opens file or creates a file if it does not exist in the user's home directory
+ * called .CIS3110_history
+ * Appends the user inputted command line to the end of the file with the format
+ * (space) number (2 spaces) command line
+ *
+ * @param    char *userInput, user command input string
+ *
+ * @return  -1, File failed to open
+ * @return   0, Successfully Wrote to file
+*/
 int historyWrite(char* userInput)
 {
   FILE* fp;
@@ -60,6 +68,18 @@ int historyWrite(char* userInput)
   return 0;
 }
 
+/*
+ * @Desciption:
+ * Opens .CIS_3110_history file for reading in the user's home directory
+ * If no index value is passed in it prints the entire CIS_3110_history file to STDOUT
+ * If index is specified it only prints that many lines of the CIS3110_history file to STDOUT
+ *
+ *
+ * @param    int index, number of commands to print
+ *
+ * @return  -1, File failed to open
+ * @return   0, Successfully Wrote to file
+*/
 int historyRead(int index)
 {
   FILE* fp;
@@ -95,6 +115,17 @@ int historyRead(int index)
   return 0;
 }
 
+/*
+ * @Desciption:
+ * Deletes .CIS3110_history file and sets the command count to 0.
+ *
+ *
+ * @param    int index, number of commands to print
+ *
+ * @return  0, File Successfully Deleted
+ * @return -1, File Failed to be Deleted
+ * @return  1, Unexpected Output
+*/
 int historyDelete()
 {
   if (remove(myHISTFILE) == 0) {
@@ -108,6 +139,15 @@ int historyDelete()
   return 1;
 }
 
+/*
+ * @Desciption:
+ * Sets Global variables to PATH export format.
+ * Gets uid of current parent process and finds User's passwd struct *p which
+ * stores the user's NAME, and HOMEDIRECTORY. If the program fails to find the
+ * user's passwd struct it sets the default username myUSER = "user"
+ * and homedirectory myHOME = the current working directory.
+ *
+*/
 void setEnvironment()
 {
   char myHISTFILEenv[510] = "myHISTFILE=";
@@ -126,38 +166,32 @@ void setEnvironment()
 
     // Setting Environment Variable $myUSER
     strcat(myUSERenv, myUSER);
-    putenv(myUSERenv);
 
     if (getcwd(myHOME, sizeof(myHOME)) == NULL) {
       perror("Error Getting Current Working Directory\n");
     } else {
       // Setting Environment Variable $myHOME
       strcat(myHOMEenv, myHOME);
-      putenv(myHOMEenv);
 
       strcpy(myHISTFILE, myHOME);
       strcat(myHISTFILE, "/bin/.CIS3110_history");
 
       // Setting Environment Variable $myHISTFILE
       strcat(myHISTFILEenv, myHISTFILE);
-      putenv(myHISTFILEenv);
     }
   } else {
     strcpy(myUSER, p->pw_name);
     // Seting Environment Variable $myUSER
     strcat(myUSERenv, myUSER);
-    putenv(myUSERenv);
 
     strcpy(myHOME, p->pw_dir);
     // Setting Environment Variable $myHOME
     strcat(myHOMEenv, myHOME);
-    putenv(myHOMEenv);
 
     strcpy(myHISTFILE, myHOME);
     strcat(myHISTFILE, "/.CIS3110_history");
 
     // Setting Environment Variable $myHISTFILE
     strcat(myHISTFILEenv, myHISTFILE);
-    putenv(myHISTFILEenv);
   }
 }

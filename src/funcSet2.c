@@ -2,7 +2,7 @@
  * Andre D'Souza
  * #:0952594
  * Deadline: 02/02/22
- *
+ * Extension: 02/06/22
  * This file comprises the functions to complete
  * Set 2 Functions of Assignment 1
 */
@@ -11,6 +11,7 @@
 // To Allow use of strtok(), without compiler warnings, taken from Man-Page
 #define _POSIX_C_SOURCE 200809L
 
+//Uncommnet to toggle ON debug print statements
 // #define DEBUG
 
 #ifdef DEBUG
@@ -29,11 +30,19 @@
 // Local Libraries
 #include "FuncSet2.h"
 
-void funcSet2Print()
-{
-  printf("Hello FuncSet2!\n");
-}
-
+/*
+ * @Desciption:
+ * Opens file or creates a file if it does not exist
+ * Execuates command which output is redirected to that file.
+ *
+ * @param     char command, user command input string
+ * @param     char *arg[], user command arguments input string array
+ * @param     char *filename[], The name of the file which to redirect the output to
+ *
+ * @return  status, If execvp() failed it will return with its status
+ * @return  -3, Failed to open the File
+ * @return  -4, The File Name inputed is unreadable or does not exist
+*/
 int outRedirToFile(char* command, char* arg[], char* fileName[])
 {
   FILE* fp;
@@ -58,6 +67,19 @@ int outRedirToFile(char* command, char* arg[], char* fileName[])
   }
 }
 
+/*
+ * @Desciption:
+ * Opens file for reading purposes
+ * Execuates command whoes input is redirected from that file.
+ *
+ * @param     char command, user command input string
+ * @param     char *arg[], user command arguments input string array
+ * @param     char *filename[], The name of the file which to redirect the output to
+ *
+ * @return  status, If execvp() failed it will return with its status
+ * @return  -3, Failed to open the File
+ * @return  -4, The File Name inputed is unreadable or does not exist
+*/
 int inRedirFromFile(char* command, char* arg[], char* fileName[])
 {
   FILE* fp;
@@ -84,8 +106,8 @@ int inRedirFromFile(char* command, char* arg[], char* fileName[])
 
     } while (arg[i] != NULL);
 
-  fclose(fp);
   status = execvp(command, arg);          // Execute in PATH=/bin Dir
+  fclose(fp);
   return status;
   } else {
     perror("File Name is Unreadable\n");
@@ -93,6 +115,18 @@ int inRedirFromFile(char* command, char* arg[], char* fileName[])
   }
 }
 
+/*
+ * @Desciption:
+ * Cloese Read end of Pipe, Replaces STDOUT File Number desciptor with Write end
+ * of Pipe File Desciptors, Closes the Write Pipe file Desciptor.
+ * Executes the command
+ *
+ * @param     char command, user command input string
+ * @param     char *arg[], user command arguments input string array
+ * @param     int *pipefd[], Two ends of the pipe pipefd[0] = Read, pipefd[1] = Write
+ *
+ * @return  status, If execvp() failed it will return with its status
+*/
 int pipeIn(char* command, char* arg[], int pipefd[])
 {
   close(pipefd[0]);                     // Close Read end of Pipe, Not in use Right now
@@ -101,6 +135,18 @@ int pipeIn(char* command, char* arg[], int pipefd[])
   return execvp(command, arg);          // Execute Command Into Pipe
 }
 
+/*
+ * @Desciption:
+ * Cloese Write end of Pipe, Replaces STDIN File Number desciptor with Read end
+ * of Pipe File Desciptors, Closes the Read Pipe file Desciptor.
+ * Executes the command
+ *
+ * @param     char command, user command input string
+ * @param     char *arg[], user command arguments input string array
+ * @param     int *pipefd[], Two ends of the pipe pipefd[0] = Read, pipefd[1] = Write
+ *
+ * @return  status, If execvp() failed it will return with its status
+*/
 int pipeOut(char* command, char* arg[], int pipefd[])
 {
   close(pipefd[1]);                     // Close Write end of Pipe, Not in use Right now

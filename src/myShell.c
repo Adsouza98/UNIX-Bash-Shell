@@ -1,3 +1,13 @@
+/*
+ * Andre D'Souza
+ * #:0952594
+ * Deadline: 02/02/22
+ * Extension: 02/06/22
+ *
+ * This File comprises of the main.c infinite loop of the program,
+ * and handels all the negotations with the functionSet#.c files
+*/
+
 // Global Variables
 char myHOME[500];
 char myHISTFILE[500];
@@ -7,6 +17,7 @@ char myUSER[50];
 // To Allow use of strtok(), without compiler warnings, taken from Man-Page
 #define _POSIX_C_SOURCE 200809L
 
+//Uncommnet to toggle ON debug print statements
 // #define DEBUG
 
 #ifdef DEBUG
@@ -40,7 +51,7 @@ int main ()
   int operator;                                   // shellInput Return Status
   int pipefd[2];                                  // Pipe File Desciptors, pipefd[0] = Read End, pipefd[1] = Write End
 
-  pid_t parentID = getpid();                      // Parent Process ID
+  //pid_t parentID = getpid();                      // Parent Process ID
   pid_t pid;                                      // Child Process ID
   pid_t pidPipeOut;                               // Piped Process ID
 
@@ -53,7 +64,7 @@ int main ()
     l=0;
     status = 0;
 
-    DEBUG_PRINT(("Debug Parent ID = %d\n", (int)parentID));
+    //DEBUG_PRINT(("Debug Parent ID = %d\n", (int)parentID));
     // Display User Shell Prompt for Command
     displayShell();
 
@@ -113,7 +124,7 @@ int main ()
       // Command is an Executable File in Local Bin Dir
       if (command[0] == '.' && command[1] == '/') {
         DEBUG_PRINT(("Command started with slash\n"));
-        strcpy(cmdUsrLocal, "bin/");
+        //strcpy(cmdUsrLocal, "bin/");
         strcat(cmdUsrLocal, command);
         status = execvp(cmdUsrLocal, arguments);
       }

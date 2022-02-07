@@ -2,7 +2,7 @@
  * Andre D'Souza
  * #:0952594
  * Deadline: 02/02/22
- *
+ * Extension: 02/06/22
  * This file comprises the functions to complete
  * Set 1 Functions of Assignment 1
 */
@@ -16,6 +16,7 @@ extern char myUSER[50];
 // To Allow use of strtok(), without compiler warnings, taken from Man-Page
 #define _POSIX_C_SOURCE 200809L
 
+//Uncommnet to toggle ON debug print statements
 // #define DEBUG
 
 #ifdef DEBUG
@@ -38,7 +39,6 @@ extern char myUSER[50];
 
 
 /*
- * [display_Shell desciption]
  * If Shell is started for the first time (on bootup)
  * function clears terminal display and prints Shell prompt for user
 */
@@ -55,13 +55,23 @@ void displayShell()
 }
 
 /*
- * [shell_input desciption]
+ * @Desciption:
+ * Reads single line from user until '\n' character (enter key).
+ * Writes the user command to the .CIS3110_history file, checks for valid input
+ * or speciality case and returns corresponding integer value to each case.
+ * The Function also stores the command, arguments and operands into the
+ * variables cmd, arg[], arg2[] that are passed into the function.
+ *
  * @param   char cmd[], user command input string
  * @param   char *arg[], user command arguments input string array
- * #TODO: Desciption
+ * @param   char *arg2[], user command arguments for Special Case {<,>,&,|}
+ *
  * @return  0, No Operators {<,>,&,|}
+ * @return  4, Background Execution
  * @return  5, Operator ">"
- * @return  -2, No User Input
+ * @return  6, Operator "<"
+ * @return  7, Operator "|"
+ * @return -2, No User Input or No Arguments or Operands
 */
 int shellInput(char cmd[], char *arg[], char *arg2[])
 {
@@ -76,9 +86,10 @@ int shellInput(char cmd[], char *arg[], char *arg2[])
   // Read Single Line of User Input
   fgets(userInput, 500, stdin);
 
+  // Write the user command to .CIS3110_history file in user's home directory
   historyWrite(userInput);
 
-  //No valid input, return for new user input
+  // No valid input, return for new user input
   if (strcmp(userInput, "\n") == 0) {return -2;}
 
   // Set first value of userArray to NULL for error checking
@@ -125,7 +136,7 @@ int shellInput(char cmd[], char *arg[], char *arg2[])
       }
       piping = true;
     }
-
+    // Command Whos Output is to be Runned in the Background
     if (strcmp(tmp, "&") == 0) {
       DEBUG_PRINT(("Found &\n"));
       tmp = strtok(NULL, " \n");
@@ -141,6 +152,7 @@ int shellInput(char cmd[], char *arg[], char *arg2[])
       }
     }
 
+    // If Special Case then all other commands are Arguments to the Special Case
     if (reDirecTo == true || reDirecFrom == true || piping == true) {
       DEBUG_PRINT(("tmp = %s\n", tmp));
       userArray2[k++] = strdup(tmp);
